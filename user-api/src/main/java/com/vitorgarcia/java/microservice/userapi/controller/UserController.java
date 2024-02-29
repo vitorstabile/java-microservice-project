@@ -2,8 +2,7 @@ package com.vitorgarcia.java.microservice.userapi.controller;
 
 import com.vitorgarcia.java.microservice.userapi.dto.UserDTO;
 import jakarta.annotation.PostConstruct;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,10 +11,10 @@ import java.util.List;
 @RestController
 public class UserController {
 
-    public	static	List<UserDTO> users = new ArrayList<UserDTO>();
+    public static List<UserDTO> users = new ArrayList<UserDTO>();
 
     @PostConstruct
-    public	void	initiateList()	{
+    public void initiateList()	{
         UserDTO userDTO = new UserDTO();
         userDTO.setName("John Snow");
         userDTO.setTaxId("111222333");
@@ -56,4 +55,31 @@ public class UserController {
         return users;
     }
 
+    @GetMapping("/users/{taxId}")
+    public UserDTO getUserByTaxId(@PathVariable String taxId) {
+        for (UserDTO user : users) {
+            if (user.getTaxId().equalsIgnoreCase(taxId)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    @PostMapping("/newUser")
+    public UserDTO addUser(@RequestBody UserDTO obj) {
+        obj.setSubscriptionDate(new Date());
+        users.add(obj);
+        return obj;
+    }
+
+    @DeleteMapping("/users/{taxId}")
+    public boolean deleteUser(@PathVariable String taxId) {
+        for (UserDTO user : users) {
+            if (user.getTaxId().equalsIgnoreCase(taxId)) {
+                users.remove(user);
+                return true;
+            }
+        }
+        return false;
+    }
 }
